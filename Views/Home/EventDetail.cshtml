@@ -1,0 +1,52 @@
+@model NGOEvent
+@{ ViewData["Title"] = Model.Title; }
+
+<div class="container py-5" style="max-width:760px">
+    <a href="/Home/Events" class="btn btn-sm btn-outline-secondary mb-4"><i class="ti ti-arrow-left"></i>Back</a>
+
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" class="w-100 rounded-3 mb-4" style="max-height:380px;object-fit:cover" />
+    }
+    else
+    {
+        <div class="item-icon-tile rounded-3 mb-4" style="height:280px;font-size:4rem"><i class="ti ti-target-arrow"></i></div>
+    }
+
+    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+        <span class="badge-cat badge-@Model.Category.ToString().ToLower() fs-6">@Model.Category</span>
+        <span class="text-muted small"><i class="ti ti-calendar"></i> @Model.EventDate.ToString("dd MMMM yyyy")</span>
+    </div>
+
+    <h1 class="fw-800 mb-1">@Model.Title</h1>
+    <p class="text-muted mb-4"><i class="ti ti-building-community"></i> By <strong>@Model.NGOProfile?.OrganizationName</strong> &middot; @Model.NGOProfile?.City, @Model.NGOProfile?.State</p>
+
+    @if (Model.FundingGoal.HasValue && Model.FundingGoal > 0)
+    {
+        var pct = Math.Min(100, (int)(Model.FundsRaised / Model.FundingGoal.Value * 100));
+        <div class="sd-card p-4 mb-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-700 text-success fs-5">&#8377;@Model.FundsRaised.ToString("N0") raised</span>
+                <span class="text-muted">of &#8377;@Model.FundingGoal.Value.ToString("N0")</span>
+            </div>
+            <div class="progress mb-1" style="height:12px"><div class="progress-bar" style="width:@pct%"></div></div>
+            <div class="text-muted small mt-1">@pct% funded</div>
+        </div>
+    }
+
+    <div class="sd-card p-4 mb-4">
+        <h5 class="fw-700 mb-3"><i class="ti ti-file-description"></i> About this event</h5>
+        <p style="white-space:pre-line">@Model.Description</p>
+    </div>
+
+    @if (User.IsInRole("Donor"))
+    {
+        <a href="/Donor/Donate?ngoId=@Model.NGOProfileId&eventId=@Model.Id" class="btn btn-donate w-100">
+            <i class="ti ti-heart-handshake"></i>Donate to this event
+        </a>
+    }
+    else if (!User.Identity!.IsAuthenticated)
+    {
+        <a href="/Account/Login" class="btn btn-donate w-100"><i class="ti ti-login-2"></i>Log in to donate</a>
+    }
+</div>

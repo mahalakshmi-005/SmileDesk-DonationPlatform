@@ -1,0 +1,58 @@
+@model List<MoneyDonation>
+@{ ViewData["Title"] = "My Donations"; }
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-800 mb-0">My donation history</h4>
+            <p class="text-muted small mb-0">All your monetary donations</p>
+        </div>
+        <a href="/Home/Events" class="btn btn-success"><i class="ti ti-heart"></i>Donate again</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="sd-card text-center py-5">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:60px;height:60px;font-size:1.6rem"><i class="ti ti-credit-card"></i></div>
+            <h5 class="fw-700">No donations yet</h5>
+            <p class="text-muted">Browse events and make your first donation.</p>
+            <a href="/Home/Events" class="btn btn-success">Browse events</a>
+        </div>
+    }
+    else
+    {
+        var total = Model.Where(m => m.Status == PaymentStatus.Success).Sum(m => m.Amount);
+        <div class="stat-card mb-4" style="max-width:300px">
+            <div class="stat-icon-box icon-green"><i class="ti ti-heart-handshake"></i></div>
+            <div><div class="stat-value">&#8377;@total.ToString("N0")</div><div class="stat-label">Total donated</div></div>
+        </div>
+
+        <div class="sd-table">
+            <table class="table mb-0">
+                <thead>
+                    <tr><th>NGO</th><th>Event</th><th>Amount</th><th>Date</th><th>Status</th><th>Payment ID</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model)
+                    {
+                        <tr>
+                            <td class="fw-600">@d.NGOProfile?.OrganizationName</td>
+                            <td class="text-muted small">@(d.NGOEvent?.Title ?? "General fund")</td>
+                            <td class="fw-700 text-success">&#8377;@d.Amount.ToString("N0")</td>
+                            <td class="text-muted small">@d.DonatedOn.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (d.Status == PaymentStatus.Success)
+                                { <span class="badge-cat badge-approved"><i class="ti ti-circle-check"></i> Success</span> }
+                                else if (d.Status == PaymentStatus.Pending)
+                                { <span class="badge-cat badge-pending"><i class="ti ti-clock"></i> Pending</span> }
+                                else
+                                { <span class="badge-cat badge-rejected"><i class="ti ti-x"></i> Failed</span> }
+                            </td>
+                            <td class="text-muted small" style="font-size:.7rem">@(d.RazorpayPaymentId ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

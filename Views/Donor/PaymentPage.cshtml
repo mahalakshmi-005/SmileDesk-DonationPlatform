@@ -1,0 +1,75 @@
+@{ ViewData["Title"] = "Complete Payment"; }
+
+<div class="container py-5">
+    <div class="payment-card">
+        <div class="payment-header">
+            <i class="ti ti-shield-lock payment-icon"></i>
+            <h4 class="fw-800 mt-2 mb-1">Secure checkout</h4>
+            <p class="mb-0 opacity-75">Donating to @ViewBag.NGOName</p>
+        </div>
+        <div class="payment-body text-center">
+            <div class="amount-display mb-1">&#8377;@((ViewBag.Amount / 100).ToString("N0"))</div>
+            <p class="text-muted mb-4">Total amount</p>
+
+            <button id="payBtn" class="btn btn-donate w-100 mb-3">
+                <i class="ti ti-credit-card"></i>Pay with Razorpay
+            </button>
+            <p class="text-muted small">
+                <i class="ti ti-shield-check"></i> Secured by Razorpay. Supports UPI, cards, net banking.
+            </p>
+        </div>
+    </div>
+    <input type="hidden" id="csrfToken" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+</div>
+
+@section Scripts {
+<script>
+    const options = {
+        key: '@ViewBag.RazorpayKeyId',
+        amount: '@ViewBag.Amount',
+        currency: 'INR',
+        name: 'Smile Desk',
+        description: 'Donation to @ViewBag.NGOName',
+        order_id: '@ViewBag.OrderId',
+        prefill: {
+            name: '@ViewBag.DonorName',
+            email: '@ViewBag.DonorEmail',
+            contact: '@ViewBag.DonorPhone'
+        },
+        theme: { color: '#ec1f6b' },
+        handler: function(response) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Donor/PaymentCallback';
+            const fields = {
+                RazorpayPaymentId: response.razorpay_payment_id,
+                RazorpayOrderId:   response.razorpay_order_id,
+                RazorpaySignature: response.razorpay_signature,
+                DonationId:        '@ViewBag.DonationId',
+                __RequestVerificationToken: document.getElementById('csrfToken').value
+            };
+            for (const [k, v] of Object.entries(fields)) {
+                const inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = k; inp.value = v;
+                form.appendChild(inp);
+            }
+            document.body.appendChild(form);
+            form.submit();
+        },
+        modal: {
+            ondismiss: function() {
+                document.getElementById('payBtn').disabled = false;
+                document.getElementById('payBtn').innerHTML = '<i class="ti ti-credit-card"></i>Pay with Razorpay';
+                window.SmileDeskIcons.render(document.getElementById('payBtn'));
+            }
+        }
+    };
+
+    document.getElementById('payBtn').addEventListener('click', function() {
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Opening...';
+        const rzp = new Razorpay(options);
+        rzp.open();
+    });
+</script>
+}

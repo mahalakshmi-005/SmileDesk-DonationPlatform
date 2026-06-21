@@ -1,0 +1,72 @@
+@model List<NGOProfile>
+@{ ViewData["Title"] = "Manage NGOs"; }
+
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-800 mb-0">All NGOs</h4>
+        <span class="badge bg-secondary fs-6">@Model.Count total</span>
+    </div>
+
+    <div class="sd-table">
+        <table class="table mb-0">
+            <thead>
+                <tr><th>Organization</th><th>Reg. no.</th><th>Location</th><th>Phone</th><th>Payouts</th><th>Registered</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var ngo in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="ngo-avatar"><i class="ti ti-building-community"></i></div>
+                                <div>
+                                    <div class="fw-600">@ngo.OrganizationName</div>
+                                    <div class="text-muted small">@ngo.User?.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-muted small">@ngo.RegisterNumber</td>
+                        <td class="text-muted small">@ngo.City, @ngo.State</td>
+                        <td class="text-muted small">@ngo.PhoneNumber</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(ngo.RazorpayAccountId))
+                            { <span class="badge-cat badge-approved"><i class="ti ti-arrow-right-circle"></i> Routed</span> }
+                            else if (ngo.BankDetailsSubmitted)
+                            { <span class="badge-cat badge-pending"><i class="ti ti-clock"></i> Manual</span> }
+                            else
+                            { <span class="badge-cat badge-other">Not set up</span> }
+                        </td>
+                        <td class="text-muted small">@ngo.CreatedOn.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (ngo.IsApproved)
+                            { <span class="badge-cat badge-approved"><i class="ti ti-circle-check"></i> Approved</span> }
+                            else
+                            { <span class="badge-cat badge-pending"><i class="ti ti-clock"></i> Pending</span> }
+                        </td>
+                        <td>
+                            @if (!ngo.IsApproved)
+                            {
+                                <div class="d-flex gap-2">
+                                    <form method="post" action="/Admin/ApproveNGO">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@ngo.Id" />
+                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form method="post" action="/Admin/RejectNGO" onsubmit="return confirm('Remove this NGO?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@ngo.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">&mdash;</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

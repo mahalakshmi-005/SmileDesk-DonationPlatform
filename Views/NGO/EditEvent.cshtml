@@ -1,0 +1,52 @@
+@model NGOEventViewModel
+@{ ViewData["Title"] = "Edit Event"; }
+
+<div class="container py-5">
+    <div class="sd-form-card" style="max-width:600px">
+        <div class="text-center mb-4">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:56px;height:56px;font-size:1.6rem"><i class="ti ti-edit"></i></div>
+            <h2 class="fw-800 mb-1">Edit event</h2>
+            <p class="text-muted small">Update your event details</p>
+        </div>
+
+        <form asp-action="EditEvent" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="Title" class="form-label">Event title</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Category" class="form-label">Category</label>
+                    <select asp-for="Category" class="form-select" asp-items="Html.GetEnumSelectList<EventCategory>()"></select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="EventDate" class="form-label">Event date</label>
+                    <input asp-for="EventDate" type="date" class="form-control" value="@Model.EventDate.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="FundingGoal" class="form-label">Funding goal (&#8377;)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">&#8377;</span>
+                        <input asp-for="FundingGoal" type="number" class="form-control" min="100" />
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Image" class="form-label">Replace banner image (optional)</label>
+                    <input asp-for="Image" type="file" class="form-control" accept="image/*" />
+                </div>
+                <div class="col-12 mt-2 d-flex gap-2">
+                    <a href="/NGO/MyEvents" class="btn btn-outline-secondary flex-fill">Cancel</a>
+                    <button type="submit" class="btn btn-success flex-fill"><i class="ti ti-device-floppy"></i> Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

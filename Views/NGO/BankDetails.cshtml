@@ -1,0 +1,44 @@
+@model BankDetailsViewModel
+@{ ViewData["Title"] = "Bank Details"; }
+
+<div class="container py-5">
+    <div class="sd-form-card" style="max-width:560px">
+        <div class="text-center mb-4">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:56px;height:56px;font-size:1.6rem"><i class="ti ti-building-bank"></i></div>
+            <h2 class="fw-800 mb-1">Bank &amp; payout details</h2>
+            <p class="text-muted small">
+                Donations will be sent directly to this account via Razorpay Route, instead of pooling on the platform first.
+            </p>
+        </div>
+
+        <div class="p-3 rounded-3 mb-4 d-flex gap-2" style="background:#fffbeb;border:1px solid #fde68a">
+            <i class="ti ti-info-circle text-warning" style="font-size:1.2rem;flex-shrink:0"></i>
+            <p class="small mb-0">Razorpay Route requires platform-level approval. If it isn't enabled yet on this Razorpay account, your details are still saved securely and funds will be settled to you manually until Route is approved.</p>
+        </div>
+
+        <form asp-action="BankDetails" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="BankAccountHolderName" class="form-label">Account holder name</label>
+                    <input asp-for="BankAccountHolderName" class="form-control" placeholder="As per bank records" />
+                    <span asp-validation-for="BankAccountHolderName" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="BankAccountNumber" class="form-label">Account number</label>
+                    <input asp-for="BankAccountNumber" class="form-control" placeholder="Bank account number" />
+                    <span asp-validation-for="BankAccountNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="BankIfscCode" class="form-label">IFSC code</label>
+                    <input asp-for="BankIfscCode" class="form-control" placeholder="e.g. SBIN0001234" style="text-transform:uppercase" />
+                    <span asp-validation-for="BankIfscCode" class="text-danger small"></span>
+                </div>
+                <div class="col-12 mt-2 d-flex gap-2">
+                    <a href="/NGO/Dashboard" class="btn btn-outline-secondary flex-fill">Cancel</a>
+                    <button type="submit" class="btn btn-success flex-fill"><i class="ti ti-shield-check"></i> Save securely</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

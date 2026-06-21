@@ -1,0 +1,154 @@
+@model DonorDashboardViewModel
+@{ ViewData["Title"] = "Donor Dashboard"; }
+
+<div class="dashboard-layout">
+    <div class="sd-sidebar">
+        <div class="sidebar-section-label">Donor menu</div>
+        <a href="/Donor/Dashboard"   class="sidebar-link active"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+        <a href="/Donor/EditProfile" class="sidebar-link"><i class="ti ti-user-edit"></i> My profile</a>
+        <a href="/Donor/PostItem"    class="sidebar-link"><i class="ti ti-plus"></i> Post item</a>
+        <a href="/Donor/MyItems"     class="sidebar-link"><i class="ti ti-package"></i> My items</a>
+        <a href="/Donor/MyDonations" class="sidebar-link"><i class="ti ti-heart-handshake"></i> My donations</a>
+        <a href="/Home/Events"       class="sidebar-link"><i class="ti ti-calendar-event"></i> Browse events</a>
+        <hr/>
+        <form method="post" action="/Account/Logout">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="sidebar-link border-0 bg-transparent w-100 text-start text-danger">
+                <i class="ti ti-logout-2"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-800 mb-0">Welcome, @Model.Profile?.DonorName <i class="ti ti-hand-finger"></i></h4>
+                <p class="text-muted small mb-0">Here's your impact summary</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/Donor/PostItem" class="btn btn-outline-success btn-sm"><i class="ti ti-plus"></i>Post item</a>
+                <a href="/Home/Events" class="btn btn-success btn-sm"><i class="ti ti-heart"></i>Donate now</a>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-green"><i class="ti ti-heart-handshake"></i></div>
+                    <div><div class="stat-value">&#8377;@Model.TotalMoneyDonated.ToString("N0")</div><div class="stat-label">Money donated</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-teal"><i class="ti ti-package"></i></div>
+                    <div><div class="stat-value">@Model.TotalItemsDonated</div><div class="stat-label">Items donated</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-amber"><i class="ti ti-list-details"></i></div>
+                    <div><div class="stat-value">@Model.MyItems.Count</div><div class="stat-label">Active posts</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-blue"><i class="ti ti-bell"></i></div>
+                    <div><div class="stat-value">@Model.PendingRequests.Count</div><div class="stat-label">Pending requests</div></div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.PendingRequests.Any())
+        {
+            <div class="sd-card mb-4">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between align-items-center p-3 pb-0">
+                        <h6 class="fw-700 mb-0"><i class="ti ti-bell-ringing"></i> NGO item requests</h6>
+                        <span class="badge bg-warning text-dark">@Model.PendingRequests.Count pending</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table sd-table mb-0">
+                            <thead><tr><th>Item</th><th>NGO</th><th>Message</th><th>Action</th></tr></thead>
+                            <tbody>
+                                @foreach (var req in Model.PendingRequests)
+                                {
+                                    <tr>
+                                        <td class="fw-600">@req.DonationItem?.Title</td>
+                                        <td>@req.NGOProfile?.OrganizationName</td>
+                                        <td class="text-muted small">@(req.Message.Length > 50 ? req.Message[..50] + "..." : req.Message)</td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <form method="post" action="/Donor/RespondToRequest" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="requestId" value="@req.Id" />
+                                                    <input type="hidden" name="accept" value="true" />
+                                                    <button type="submit" class="btn btn-sm btn-success"><i class="ti ti-check"></i> Accept</button>
+                                                </form>
+                                                <form method="post" action="/Donor/RespondToRequest" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="requestId" value="@req.Id" />
+                                                    <input type="hidden" name="accept" value="false" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="ti ti-x"></i> Decline</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="sd-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="fw-700 mb-0">My recent posts</h6>
+                            <a href="/Donor/MyItems" class="small text-success">View all</a>
+                        </div>
+                        @if (!Model.MyItems.Any())
+                        {
+                            <p class="text-muted small text-center py-3">No items posted yet. <a href="/Donor/PostItem">Post one</a></p>
+                        }
+                        @foreach (var item in Model.MyItems)
+                        {
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="stat-icon-box icon-green" style="width:40px;height:40px;font-size:1rem"><i class="ti ti-package"></i></div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-600 small">@item.Title</div>
+                                    <div class="text-muted" style="font-size:.75rem">@item.Category &middot; @item.Condition</div>
+                                </div>
+                                <span class="badge-cat badge-@item.Status.ToString().ToLower()" style="font-size:.7rem">@item.Status</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="sd-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="fw-700 mb-0">Events to support</h6>
+                            <a href="/Home/Events" class="small text-success">View all</a>
+                        </div>
+                        @foreach (var ev in Model.RecentEvents)
+                        {
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="stat-icon-box icon-teal" style="width:40px;height:40px;font-size:1rem"><i class="ti ti-target-arrow"></i></div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-600 small">@ev.Title</div>
+                                    <div class="text-muted" style="font-size:.75rem">@ev.NGOProfile?.OrganizationName</div>
+                                </div>
+                                <a href="/Donor/Donate?ngoId=@ev.NGOProfileId&eventId=@ev.Id" class="btn btn-sm btn-success" style="font-size:.75rem">Donate</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

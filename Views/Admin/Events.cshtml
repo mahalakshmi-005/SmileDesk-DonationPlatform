@@ -1,0 +1,44 @@
+@model List<NGOEvent>
+@{ ViewData["Title"] = "All Events"; }
+
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-800 mb-0">All NGO events</h4>
+        <span class="badge bg-secondary fs-6">@Model.Count events</span>
+    </div>
+
+    <div class="sd-table">
+        <table class="table mb-0">
+            <thead>
+                <tr><th>Event</th><th>NGO</th><th>Category</th><th>Date</th><th>Funds</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in Model)
+                {
+                    <tr>
+                        <td class="fw-600">@ev.Title</td>
+                        <td class="text-muted small">@ev.NGOProfile?.OrganizationName</td>
+                        <td><span class="badge-cat badge-@ev.Category.ToString().ToLower()">@ev.Category</span></td>
+                        <td class="text-muted small">@ev.EventDate.ToString("dd MMM yyyy")</td>
+                        <td class="fw-600 text-success">&#8377;@ev.FundsRaised.ToString("N0")</td>
+                        <td>
+                            @if (ev.IsActive)
+                            { <span class="badge-cat badge-approved"><i class="ti ti-point-filled"></i> Active</span> }
+                            else
+                            { <span class="badge-cat badge-rejected"><i class="ti ti-point-filled"></i> Inactive</span> }
+                        </td>
+                        <td>
+                            <form method="post" action="/Admin/ToggleEvent">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@ev.Id" />
+                                <button type="submit" class="btn btn-sm @(ev.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                    @(ev.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

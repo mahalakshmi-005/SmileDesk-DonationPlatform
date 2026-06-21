@@ -1,0 +1,49 @@
+@model List<MoneyDonation>
+@{ ViewData["Title"] = "All Donations"; }
+
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h4 class="fw-800 mb-0">All money donations</h4>
+        <div>
+            <span class="fw-700 text-success me-3">
+                &#8377;@Model.Where(m => m.Status == PaymentStatus.Success).Sum(m => m.Amount).ToString("N0") total
+            </span>
+            <span class="badge bg-secondary fs-6">@Model.Count transactions</span>
+        </div>
+    </div>
+
+    <div class="sd-table">
+        <table class="table mb-0">
+            <thead>
+                <tr><th>Donor</th><th>NGO</th><th>Event</th><th>Amount</th><th>Date</th><th>Status</th><th>Settlement</th><th>Payment ID</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    <tr>
+                        <td class="fw-600 small">@d.DonorProfile?.DonorName</td>
+                        <td class="text-muted small">@d.NGOProfile?.OrganizationName</td>
+                        <td class="text-muted small">@(d.NGOEvent?.Title ?? "General fund")</td>
+                        <td class="fw-700 text-success">&#8377;@d.Amount.ToString("N0")</td>
+                        <td class="text-muted small">@d.DonatedOn.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (d.Status == PaymentStatus.Success)
+                            { <span class="badge-cat badge-approved"><i class="ti ti-circle-check"></i> Success</span> }
+                            else if (d.Status == PaymentStatus.Pending)
+                            { <span class="badge-cat badge-pending"><i class="ti ti-clock"></i> Pending</span> }
+                            else
+                            { <span class="badge-cat badge-rejected"><i class="ti ti-x"></i> Failed</span> }
+                        </td>
+                        <td>
+                            @if (d.RoutedToNgo)
+                            { <span class="badge-cat badge-approved">Direct</span> }
+                            else
+                            { <span class="badge-cat badge-other">Manual</span> }
+                        </td>
+                        <td class="text-muted" style="font-size:.7rem">@(d.RazorpayPaymentId ?? "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+@model List<ItemRequest>
+@{ ViewData["Title"] = "My Item Requests"; }
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-800 mb-0">My item requests</h4>
+            <p class="text-muted small mb-0">Track all item requests sent to donors</p>
+        </div>
+        <a href="/NGO/BrowseItems" class="btn btn-outline-success"><i class="ti ti-search"></i>Browse more items</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="sd-card text-center py-5">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:60px;height:60px;font-size:1.6rem"><i class="ti ti-list-check"></i></div>
+            <h5 class="fw-700">No requests sent yet</h5>
+            <p class="text-muted">Browse available items and request what your NGO needs.</p>
+            <a href="/NGO/BrowseItems" class="btn btn-success">Browse items</a>
+        </div>
+    }
+    else
+    {
+        <div class="sd-table">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Donor</th>
+                        <th>Message</th>
+                        <th>Requested on</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var req in Model)
+                    {
+                        <tr>
+                            <td class="fw-600">@req.DonationItem?.Title</td>
+                            <td><span class="badge-cat badge-clothes">@req.DonationItem?.Category</span></td>
+                            <td>
+                                <div class="fw-600 small">@req.DonationItem?.DonorProfile?.DonorName</div>
+                                <div class="text-muted" style="font-size:.75rem">@req.DonationItem?.DonorProfile?.City</div>
+                            </td>
+                            <td class="text-muted small" style="max-width:200px">
+                                @(req.Message.Length > 60 ? req.Message[..60] + "..." : req.Message)
+                            </td>
+                            <td class="text-muted small">@req.RequestedOn.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (req.Status == ItemRequestStatus.Pending)
+                                { <span class="badge-cat badge-pending"><i class="ti ti-clock"></i> Pending</span> }
+                                else if (req.Status == ItemRequestStatus.Accepted)
+                                { <span class="badge-cat badge-approved"><i class="ti ti-circle-check"></i> Accepted</span> }
+                                else if (req.Status == ItemRequestStatus.PickedUp)
+                                { <span class="badge-cat badge-pickedup"><i class="ti ti-truck-delivery"></i> Picked up</span> }
+                                else
+                                { <span class="badge-cat badge-rejected"><i class="ti ti-x"></i> Declined</span> }
+                            </td>
+                            <td>
+                                @if (req.Status == ItemRequestStatus.Pending)
+                                {
+                                    <form method="post" action="/NGO/WithdrawRequest" onsubmit="return confirm('Withdraw this request?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="requestId" value="@req.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Withdraw</button>
+                                    </form>
+                                }
+                                else if (req.Status == ItemRequestStatus.Accepted)
+                                {
+                                    <span class="small text-muted"><i class="ti ti-phone"></i> Contact donor</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">&mdash;</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

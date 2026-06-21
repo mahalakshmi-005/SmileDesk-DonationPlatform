@@ -1,0 +1,109 @@
+@model List<DonationItem>
+@{
+    ViewData["Title"] = "Donation Items";
+    Func<ItemCategory, string> iconFor = c => c switch {
+        ItemCategory.Clothes => "ti-shirt",
+        ItemCategory.Furniture => "ti-sofa",
+        ItemCategory.Electronics => "ti-device-laptop",
+        ItemCategory.Books => "ti-book",
+        ItemCategory.Food => "ti-bowl",
+        ItemCategory.Medical => "ti-first-aid-kit",
+        _ => "ti-package"
+    };
+}
+
+<div class="container py-5">
+    <div class="section-eyebrow"><i class="ti ti-package"></i> Browse</div>
+    <h2 class="section-title mb-4">Available donation items</h2>
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="/Home/DonationItems" class="btn btn-sm @(ViewBag.Category == null ? "btn-success" : "btn-outline-secondary")">All</a>
+        @foreach (var cat in Enum.GetValues<ItemCategory>())
+        {
+            <a href="/Home/DonationItems?category=@cat" class="btn btn-sm @(ViewBag.Category == cat.ToString() ? "btn-success" : "btn-outline-secondary")">@cat</a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="ti ti-box-off" style="font-size:2.8rem;opacity:.3"></i>
+            <p class="mt-3">No items available in this category.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 reveal">
+                    <div class="sd-card h-100">
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" class="card-img-top" alt="@item.Title" />
+                        }
+                        else
+                        {
+                            <div class="item-icon-tile"><i class="ti @iconFor(item.Category)"></i></div>
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex gap-2 mb-2">
+                                <span class="badge-cat badge-clothes">@item.Category</span>
+                                <span class="badge-cat badge-other">@item.Condition</span>
+                            </div>
+                            <div class="card-title">@item.Title</div>
+                            <p class="text-muted small flex-grow-1">@(item.Description.Length > 80 ? item.Description[..80] + "..." : item.Description)</p>
+                            <p class="text-muted small mb-3"><i class="ti ti-user"></i> @item.DonorProfile?.DonorName &middot; @item.DonorProfile?.City</p>
+                            @if (User.IsInRole("NGO"))
+                            {
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#requestModal" data-itemid="@item.Id" data-title="@item.Title">
+                                    <i class="ti ti-hand-stop"></i>Request this item
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (User.IsInRole("NGO"))
+{
+    <div class="modal fade" id="requestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-700"><i class="ti ti-mail-forward"></i> Request item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="post" action="/NGO/RequestItem">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" id="itemIdInput" name="itemId" />
+                        <p id="itemTitleDisplay" class="fw-600 mb-3"></p>
+                        <div class="mb-3">
+                            <label class="form-label">Message to donor</label>
+                            <textarea name="message" class="form-control" rows="3" placeholder="Explain why your NGO needs this item..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success"><i class="ti ti-send"></i> Send request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            document.getElementById('requestModal').addEventListener('show.bs.modal', function (e) {
+                var btn = e.relatedTarget;
+                document.getElementById('itemIdInput').value = btn.dataset.itemid;
+                document.getElementById('itemTitleDisplay').innerHTML = '<i class="ti ti-package"></i> ' + btn.dataset.title;
+                window.SmileDeskIcons.render(document.getElementById('itemTitleDisplay'));
+            });
+        </script>
+    }
+}

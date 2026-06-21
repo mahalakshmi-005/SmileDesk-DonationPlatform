@@ -1,0 +1,65 @@
+@model MoneyDonationViewModel
+@{ ViewData["Title"] = "Donate"; }
+
+<div class="container py-5">
+    <div class="payment-card">
+        <div class="payment-header">
+            <i class="ti ti-heart-handshake payment-icon"></i>
+            <h4 class="fw-800 mt-2 mb-1">Make a donation</h4>
+            <p class="mb-0 opacity-75">@Model.NGOName</p>
+            @if (!string.IsNullOrEmpty(Model.EventTitle))
+            {
+                <span class="badge bg-light text-dark mt-2"><i class="ti ti-target-arrow"></i> @Model.EventTitle</span>
+            }
+        </div>
+        <div class="payment-body">
+            <form asp-action="InitiatePayment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="NGOProfileId" />
+                <input type="hidden" asp-for="NGOEventId" />
+                <input type="hidden" asp-for="NGOName" />
+                <input type="hidden" asp-for="EventTitle" />
+
+                <div class="mb-3">
+                    <label class="form-label">Select amount</label>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        @foreach (var amt in new[] { 100, 500, 1000, 2500, 5000 })
+                        {
+                            <button type="button" class="btn btn-outline-success btn-sm quick-amt" data-amount="@amt">&#8377;@amt</button>
+                        }
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text fw-700">&#8377;</span>
+                        <input asp-for="Amount" type="number" class="form-control" placeholder="Enter custom amount" min="10" />
+                    </div>
+                    <span asp-validation-for="Amount" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Message" class="form-label">Message (optional)</label>
+                    <textarea asp-for="Message" class="form-control" rows="2" placeholder="A note for the NGO..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-donate w-100">
+                    <i class="ti ti-lock"></i>Proceed to secure payment
+                </button>
+                <p class="text-center text-muted small mt-2 mb-0">
+                    <i class="ti ti-shield-check"></i> Powered by Razorpay &middot; 100% secure
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.quick-amt').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelector('[name="Amount"]').value = this.dataset.amount;
+            document.querySelectorAll('.quick-amt').forEach(b => { b.classList.remove('btn-success'); b.classList.add('btn-outline-success'); });
+            this.classList.add('btn-success');
+            this.classList.remove('btn-outline-success');
+        });
+    });
+</script>
+}

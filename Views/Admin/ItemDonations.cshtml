@@ -1,0 +1,44 @@
+@model List<DonationItem>
+@{ ViewData["Title"] = "Item Donations"; }
+
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-800 mb-0">All donation items</h4>
+        <span class="badge bg-secondary fs-6">@Model.Count items</span>
+    </div>
+
+    <div class="sd-table">
+        <table class="table mb-0">
+            <thead>
+                <tr><th>Item</th><th>Donor</th><th>Category</th><th>Condition</th><th>Posted</th><th>Status</th><th>Requests</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-600">@item.Title</td>
+                        <td>
+                            <div class="fw-600 small">@item.DonorProfile?.DonorName</div>
+                            <div class="text-muted" style="font-size:.75rem">@item.DonorProfile?.City</div>
+                        </td>
+                        <td><span class="badge-cat badge-clothes">@item.Category</span></td>
+                        <td class="text-muted small">@item.Condition</td>
+                        <td class="text-muted small">@item.PostedOn.ToString("dd MMM yyyy")</td>
+                        <td><span class="badge-cat badge-@item.Status.ToString().ToLower()">@item.Status</span></td>
+                        <td>
+                            @if (item.Requests.Any())
+                            {
+                                <span class="fw-600">@item.Requests.Count</span>
+                                <span class="text-muted small"> (@item.Requests.Count(r => r.Status == ItemRequestStatus.PickedUp) picked up)</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">None</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

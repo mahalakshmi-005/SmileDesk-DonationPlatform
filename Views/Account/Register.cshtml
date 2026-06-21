@@ -1,0 +1,94 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Register"; }
+
+<div class="container py-5">
+    <div class="sd-form-card">
+        <div class="text-center mb-4">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:56px;height:56px;font-size:1.6rem"><i class="ti ti-sparkles"></i></div>
+            <h2 class="fw-800 mb-1">Join Smile Desk</h2>
+            <p class="text-muted small">Create your account and start making a difference</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger small">
+                <asp-validation-summary asp-validation-summary="ModelOnly"></asp-validation-summary>
+            </div>
+        }
+
+        <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-4">
+                <label class="form-label">I want to join as</label>
+                <div class="d-flex gap-2">
+                    <label class="flex-fill">
+                        <input type="radio" name="Role" value="Donor" class="d-none role-radio" id="roleDonor" checked />
+                        <div class="role-btn-wrap">
+                            <div class="text-center p-3 border rounded-3 role-box" id="boxDonor" style="cursor:pointer;transition:all .2s">
+                                <i class="ti ti-heart-handshake" style="font-size:1.8rem;color:var(--sd-pink)"></i>
+                                <div class="fw-700 mt-1">Donor</div>
+                                <div class="text-muted" style="font-size:.75rem">Give money or items</div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="flex-fill">
+                        <input type="radio" name="Role" value="NGO" class="d-none role-radio" id="roleNGO" />
+                        <div class="role-btn-wrap">
+                            <div class="text-center p-3 border rounded-3 role-box" id="boxNGO" style="cursor:pointer;transition:all .2s">
+                                <i class="ti ti-building-community" style="font-size:1.8rem;color:var(--sd-pink)"></i>
+                                <div class="fw-700 mt-1">NGO</div>
+                                <div class="text-muted" style="font-size:.75rem">Register your organization</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">Full name</label>
+                <input asp-for="FullName" class="form-control" placeholder="Your full name" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email address</label>
+                <input asp-for="Email" class="form-control" placeholder="you@email.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="Min 6 characters" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Confirm password</label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2 fw-700">Create account <i class="ti ti-arrow-right"></i></button>
+        </form>
+
+        <p class="text-center text-muted small mt-3 mb-0">
+            Already have an account? <a href="/Account/Login" class="text-success fw-600">Log in here</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    .role-box.active { border-color: var(--sd-pink) !important; background: #fff7e0; }
+</style>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.role-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.role-box').forEach(b => b.classList.remove('active'));
+            if (this.checked) {
+                document.getElementById(this.value === 'Donor' ? 'boxDonor' : 'boxNGO').classList.add('active');
+            }
+        });
+    });
+    document.getElementById('roleDonor').dispatchEvent(new Event('change'));
+</script>
+}

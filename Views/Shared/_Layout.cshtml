@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    /* ── Brand wordmark: distinctive, not default-bold ── */
+    .brand-text {
+        font-family: 'Outfit', 'Matura MT Script Capitals', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        letter-spacing: -0.5px;
+        color: #fff;
+    }
+
+        .brand-text strong {
+            font-weight: 800;
+            background: linear-gradient(135deg, #f9622c 0%, #ec1f6b 60%, #f5c518 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .brand-mark {
+        background: linear-gradient(135deg, #f9622c, #ec1f6b);
+        box-shadow: 0 4px 14px rgba(236, 31, 107, 0.35);
+        transition: transform .3s ease;
+    }
+
+    .navbar-brand:hover .brand-mark {
+        transform: rotate(-8deg) scale(1.06);
+    }
+
+    /* ── Nav links: cleaner tracking + underline-grow micro-interaction ── */
+    .sd-navbar .nav-link {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 500;
+        font-size: .92rem;
+        letter-spacing: .2px;
+        position: relative;
+    }
+
+        .sd-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            left: .85rem;
+            right: .85rem;
+            bottom: .15rem;
+            height: 2px;
+            background: linear-gradient(90deg, #f9622c, #ec1f6b);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .25s ease;
+        }
+
+        .sd-navbar .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+    /* ── Footer: refined type rhythm ── */
+    .sd-footer {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+        .sd-footer .footer-brand {
+            font-family: 'Matura MT Script Capitals', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+            .sd-footer .footer-brand strong {
+                background: linear-gradient(135deg, #f9622c, #ec1f6b, #f5c518);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+    .footer-heading {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 700;
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: rgba(255,255,255,.55);
+    }
+
+    .footer-links a {
+        font-weight: 500;
+        font-size: .9rem;
+        transition: padding-left .2s ease, color .2s ease;
+    }
+
+        .footer-links a:hover {
+            padding-left: 4px;
+            color: #f5c518 !important;
+        }
+
+    .footer-tagline {
+        font-weight: 400;
+        line-height: 1.7;
+        color: rgba(255,255,255,.55);
+    }
+
+    .footer-bottom {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: .82rem;
+        color: rgba(255,255,255,.4);
+    }
+
+        .footer-bottom strong {
+            color: #f5c518;
+            font-weight: 600;
+        }
+
+    .footer-social a {
+        transition: transform .25s ease, background .25s ease;
+    }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #f9622c, #ec1f6b);
+        }
+</style>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Smile Desk</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <script src="~/js/icons.js"></script>
+    <nav class="navbar navbar-expand-lg sd-navbar sticky-top" data-aos="fade-down">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span class="brand-mark"><i class="ti ti-hand-heart"></i></span>
+                <span class="brand-text">Smile<strong>Desk</strong></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                    <li class="nav-item"><a class="nav-link" href="/Home/Index"><i class="ti ti-calendar-event"></i>Home</a></li>
+                 &nbsp &nbsp   <li class="nav-item"><a class="nav-link" href="/Home/About"><i class="ti ti-info-circle"></i>About Us</a></li>
+                    &nbsp &nbsp &nbsp
+                    <li class="nav-item"><a class="nav-link" href="/Home/Events"><i class="ti ti-calendar-event"></i>Events</a></li>
+                    &nbsp &nbsp &nbsp
+                    <li class="nav-item"><a class="nav-link" href="/Home/DonationItems"><i class="ti ti-package"></i>Donate items</a></li>
+                </ul>
+                <div class="navbar-nav ms-auto align-items-center gap-2">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link" href="/Admin/Dashboard"><i class="ti ti-layout-dashboard"></i>Admin</a>
+                        }
+                        else if (User.IsInRole("Donor"))
+                        {
+                            <a class="nav-link" href="/Donor/Dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
+                        }
+                        else if (User.IsInRole("NGO"))
+                        {
+                            <a class="nav-link" href="/NGO/Dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
+                        }
+                        <form method="post" action="/Account/Logout" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-ghost-danger btn-sm"><i class="ti ti-logout-2"></i>Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="nav-link" href="/Account/Login"> Log in</a>
+                        <a class="btn btn-primary btn-sm" href="/Account/Register"><i class="ti ti-sparkles"></i>Join now</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sd-toast-stack">
+        @if (TempData["Success"] != null)
+        {
+            <div class="sd-toast sd-toast-success">
+                <i class="ti ti-circle-check"></i>
+                <span>@TempData["Success"]</span>
+                <button type="button" class="sd-toast-close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="sd-toast sd-toast-danger">
+                <i class="ti ti-alert-triangle"></i>
+                <span>@TempData["Error"]</span>
+                <button type="button" class="sd-toast-close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <div class="sd-toast sd-toast-info">
+                <i class="ti ti-info-circle"></i>
+                <span>@TempData["Info"]</span>
+                <button type="button" class="sd-toast-close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+        }
+    </div>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="sd-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="footer-brand"><span class="brand-mark"><i class="ti ti-hand-heart"></i></span> Smile<strong>Desk</strong></div>
+                    <p class="footer-tagline">Connecting generosity with the people who need it most — one verified NGO at a time.</p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/beautyy_fool_05/?hl=en"><i class="ti ti-brand-instagram"></i></a>
+                        <a href="https://www.linkedin.com/in/maha-lakshmi-k-96682a36b/"><i class="ti ti-brand-linkedin"></i></a>
+                        <a href="https://x.com/mahalakshmik265"><i class="ti ti-brand-x"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="footer-heading">Platform</h6>
+                    <ul class="footer-links">
+                        <li><a href="/Home/Events">Events</a></li>
+                        <li><a href="/Home/DonationItems">Donate items</a></li>
+                        <li><a href="/Account/Register">Sign up</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="footer-heading">For NGOs</h6>
+                    <ul class="footer-links">
+                        <li><a href="/Account/Register">Register your NGO</a></li>
+                        <li><a href="/NGO/BrowseItems">Browse items</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="footer-heading">Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="ti ti-mail"></i> support@smiledesk.in</li>
+                        <li><i class="ti ti-map-pin"></i> Periyakulam, Tamil Nadu</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; @DateTime.Now.Year Smile Desk. Built by <strong>Maha Lakshmi Kannan</strong>.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="~/js/site.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

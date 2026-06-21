@@ -1,0 +1,65 @@
+@model List<MoneyDonation>
+@{ ViewData["Title"] = "Received Donations"; }
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-800 mb-0">Received donations</h4>
+            <p class="text-muted small mb-0">All monetary donations made to your NGO</p>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="sd-card text-center py-5">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:60px;height:60px;font-size:1.6rem"><i class="ti ti-coin"></i></div>
+            <h5 class="fw-700">No donations received yet</h5>
+            <p class="text-muted">Post events to attract donors.</p>
+            <a href="/NGO/PostEvent" class="btn btn-success">Post an event</a>
+        </div>
+    }
+    else
+    {
+        var total = Model.Sum(m => m.Amount);
+        var routed = Model.Count(m => m.RoutedToNgo);
+        <div class="d-flex gap-3 flex-wrap mb-4">
+            <div class="stat-card" style="max-width:280px">
+                <div class="stat-icon-box icon-green"><i class="ti ti-heart-handshake"></i></div>
+                <div><div class="stat-value">&#8377;@total.ToString("N0")</div><div class="stat-label">Total received</div></div>
+            </div>
+            <div class="stat-card" style="max-width:280px">
+                <div class="stat-icon-box icon-teal"><i class="ti ti-arrow-right-circle"></i></div>
+                <div><div class="stat-value">@routed / @Model.Count</div><div class="stat-label">Routed directly</div></div>
+            </div>
+        </div>
+
+        <div class="sd-table">
+            <table class="table mb-0">
+                <thead>
+                    <tr><th>Donor</th><th>Event</th><th>Amount</th><th>Message</th><th>Date</th><th>Settlement</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-600 small">@d.DonorProfile?.DonorName</div>
+                                <div class="text-muted" style="font-size:.75rem">@d.DonorProfile?.City</div>
+                            </td>
+                            <td class="text-muted small">@(d.NGOEvent?.Title ?? "General fund")</td>
+                            <td class="fw-700 text-success">&#8377;@d.Amount.ToString("N0")</td>
+                            <td class="text-muted small" style="max-width:150px">@(d.Message ?? "-")</td>
+                            <td class="text-muted small">@d.DonatedOn.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (d.RoutedToNgo)
+                                { <span class="badge-cat badge-approved"><i class="ti ti-arrow-right-circle"></i> Direct</span> }
+                                else
+                                { <span class="badge-cat badge-other"><i class="ti ti-clock"></i> Manual</span> }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

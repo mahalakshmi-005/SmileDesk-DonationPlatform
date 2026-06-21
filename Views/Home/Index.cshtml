@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "Home";
+    var events = ViewBag.Events as List<NGOEvent> ?? new List<NGOEvent>();
+}
+
+<section class="sd-hero-photo">
+    <div class="hero-photo-bg" style="background-image:url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"></div>
+    <div class="hero-photo-overlay"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="hero-badge"><i class="ti ti-map-pin"></i> India's donation bridge platform</div>
+                <h1 class="display-3 text-white mb-3">
+                    Help us spread <span class="accent">joy</span>,<br/>one act at a time
+                </h1>
+                <p class="lead mb-4">Connect with verified NGOs. Donate money or items. Track your impact in real time.</p>
+                <div class="d-flex gap-3 flex-wrap hero-actions align-items-center">
+                    <a href="/Account/Register" class="btn btn-cta-gradient">
+                        <i class="ti ti-heart-handshake"></i>Join our mission
+                    </a>
+                    <a href="/Home/Events" class="btn btn-outline-light btn-lg px-4">
+                        <i class="ti ti-calendar-event"></i>Browse events
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3 hero-stats">
+                    <div class="col-4">
+                        <div class="hero-stat">
+                            <i class="ti ti-currency-rupee stat-icon"></i>
+                            <span class="stat-num">@(((decimal)ViewBag.TotalDonations).ToString("N0"))</span>
+                            <span class="stat-label">Raised</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="hero-stat">
+                            <i class="ti ti-users stat-icon"></i>
+                            <span class="stat-num">@ViewBag.TotalDonors</span>
+                            <span class="stat-label">Donors</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="hero-stat">
+                            <i class="ti ti-building-community stat-icon"></i>
+                            <span class="stat-num">@ViewBag.TotalNGOs</span>
+                            <span class="stat-label">NGOs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <div class="section-eyebrow justify-content-center"><i class="ti ti-route"></i> How it works</div>
+            <h2 class="section-title">Three simple steps to make a difference</h2>
+        </div>
+        <div class="row g-4 text-center">
+            @{
+                var steps = new[] {
+                    ("1", "ti-user-plus", "icon-green",  "Register", "Sign up as a donor or NGO in under two minutes."),
+                    ("2", "ti-search",    "icon-teal",   "Discover", "Browse events, NGOs, and donation item listings."),
+                    ("3", "ti-heart",     "icon-amber",  "Donate",   "Give money via Razorpay or hand over items directly.")
+                };
+                int i = 0;
+            }
+            @foreach (var step in steps)
+            {
+                i++;
+                <div class="col-md-4 reveal reveal-delay-@i">
+                    <div class="sd-card p-4 h-100">
+                        <div class="step-num">@step.Item1</div>
+                        <div class="stat-icon-box @step.Item3 mx-auto mb-3" style="width:58px;height:58px;font-size:1.5rem">
+                            <i class="ti @step.Item2"></i>
+                        </div>
+                        <h5 class="fw-700">@step.Item4</h5>
+                        <p class="text-muted small mb-0">@step.Item5</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background:#fff9ee">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 reveal">
+            <div>
+                <div class="section-eyebrow"><i class="ti ti-bolt"></i> Live now</div>
+                <h2 class="section-title mb-0">Upcoming events</h2>
+            </div>
+            <a href="/Home/Events" class="btn btn-outline-success">View all <i class="ti ti-arrow-right"></i></a>
+        </div>
+        @if (!events.Any())
+        {
+            <div class="text-center py-5 text-muted reveal">
+                <i class="ti ti-calendar-off" style="font-size:2.8rem;opacity:.3"></i>
+                <p class="mt-3">No events yet. NGOs will post events soon.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @{ int idx = 0; }
+                @foreach (var ev in events)
+                {
+                    idx++;
+                    <div class="col-md-4 reveal reveal-delay-@(Math.Min(idx,3))">
+                        <div class="sd-card h-100">
+                            @if (!string.IsNullOrEmpty(ev.ImagePath))
+                            {
+                                <img src="@ev.ImagePath" class="card-img-top" alt="@ev.Title" />
+                            }
+                            else
+                            {
+                                <div class="item-icon-tile"><i class="ti ti-target-arrow"></i></div>
+                            }
+                            <div class="card-body">
+                                <span class="badge-cat badge-@ev.Category.ToString().ToLower() mb-2">@ev.Category</span>
+                                <div class="card-title">@ev.Title</div>
+                                <p class="text-muted small"><i class="ti ti-building-community me-1"></i>@ev.NGOProfile?.OrganizationName</p>
+                                @if (ev.FundingGoal.HasValue && ev.FundingGoal > 0)
+                                {
+                                    var pct = Math.Min(100, (int)(ev.FundsRaised / ev.FundingGoal.Value * 100));
+                                    <div class="progress mb-1"><div class="progress-bar" style="width:@pct%"></div></div>
+                                    <div class="d-flex justify-content-between small text-muted">
+                                        <span>&#8377;@ev.FundsRaised.ToString("N0") raised</span>
+                                        <span>Goal: &#8377;@ev.FundingGoal.Value.ToString("N0")</span>
+                                    </div>
+                                }
+                                <div class="mt-3 d-flex gap-2">
+                                    <a href="/Home/EventDetail/@ev.Id" class="btn btn-sm btn-outline-secondary flex-fill">Details</a>
+                                    @if (User.IsInRole("Donor"))
+                                    {
+                                        <a href="/Donor/Donate?ngoId=@ev.NGOProfileId&eventId=@ev.Id" class="btn btn-sm btn-success flex-fill"><i class="ti ti-heart"></i>Donate</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="cta-banner p-5 text-center reveal">
+            <h2 class="fw-800 text-white mb-2">Ready to make a difference?</h2>
+            <p style="color:rgba(255,255,255,.75)" class="mb-4">Join thousands of donors and NGOs building a better India.</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="/Account/Register" class="btn btn-cta-gradient"><i class="ti ti-user-plus"></i>Join as donor</a>
+                <a href="/Account/Register" class="btn btn-outline-light btn-lg"><i class="ti ti-building-community"></i>Register NGO</a>
+            </div>
+        </div>
+    </div>
+</section>

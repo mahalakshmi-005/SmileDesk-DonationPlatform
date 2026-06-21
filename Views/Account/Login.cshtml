@@ -1,0 +1,38 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Login"; }
+
+<div class="container py-5">
+    <div class="sd-form-card">
+        <div class="text-center mb-4">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:56px;height:56px;font-size:1.6rem"><i class="ti ti-login-2"></i></div>
+            <h2 class="fw-800 mb-1">Welcome back</h2>
+            <p class="text-muted small">Log in to your Smile Desk account</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger small">
+                <asp-validation-summary asp-validation-summary="ModelOnly"></asp-validation-summary>
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email address</label>
+                <input asp-for="Email" class="form-control" placeholder="you@email.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="Your password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="mb-4 form-check">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label small">Keep me logged in</label>
+            </div>
+            <button type="submit" class="btn btn-success w-100 py-2 fw-700">Log in <i class="ti ti-arrow-right"></i></button>
+        </form>
+    </div>
+</div>

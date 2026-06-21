@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "About";
+}
+
+<!-- Hero -->
+<section class="about-hero">
+    <div class="about-hero-glow"></div>
+    <div class="container position-relative text-center" style="max-width:820px">
+        <div class="section-eyebrow justify-content-center reveal"><i class="ti ti-heart-handshake"></i> Our mission</div>
+        <h1 class="fw-800 mb-3 reveal reveal-delay-1" style="font-size:2.6rem;letter-spacing:-1px">
+            Every act of kindness deserves<br /><span class="about-accent">a clear path forward</span>
+        </h1>
+        <p class="lead text-muted mb-0 reveal reveal-delay-2">
+            Smile Desk bridges the gap between generous donors and the NGOs that need them most &mdash;
+            making giving simple, transparent, and impactful.
+        </p>
+    </div>
+</section>
+
+<!-- Quote -->
+<section class="py-4">
+    <div class="container" style="max-width:760px">
+        <div class="quote-card reveal">
+            <i class="ti ti-quote quote-mark"></i>
+            <p class="quote-text">
+                "We don't just move money &mdash; we move trust. Every rupee and every item on
+                Smile Desk travels through a verified NGO, so donors can give with confidence
+                and NGOs can focus on the work that matters."
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Who it's for -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <div class="section-eyebrow justify-content-center"><i class="ti ti-route"></i> Built for both sides of giving</div>
+            <h2 class="section-title">Who Smile Desk serves</h2>
+        </div>
+        <div class="row g-4">
+            @{
+                var items = new[] {
+            ("ti-heart", "For donors", "Post unused items, donate money to verified causes, and track your impact in real time."),
+            ("ti-building-community", "For NGOs", "Register your organization, post events, request donated items, and receive funds securely via Razorpay."),
+            ("ti-shield-check", "Secure payments", "All monetary donations go through Razorpay, India's most trusted payment gateway.")
+            };
+                int i = 0;
+            }
+            @foreach (var item in items)
+            {
+                i++;
+                <div class="col-md-4 reveal reveal-delay-@i">
+                    <div class="sd-card p-4 text-center h-100 about-feature-card">
+                        <div class="stat-icon-box icon-green mx-auto mb-3" style="width:56px;height:56px;font-size:1.5rem"><i class="ti @item.Item1"></i></div>
+                        <h6 class="fw-700 mb-2">@item.Item2</h6>
+                        <p class="text-muted small mb-0">@item.Item3</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- How a donation flows -->
+<section class="py-5" style="background:#fff9ee">
+    <div class="container" style="max-width:780px">
+        <div class="text-center mb-4 reveal">
+            <div class="section-eyebrow justify-content-center"><i class="ti ti-route"></i> Transparency</div>
+            <h2 class="section-title">How a donation actually flows</h2>
+        </div>
+        <div class="flow-timeline reveal">
+            @{
+                var flow = new[] {
+            ("ti-search", "Discover", "Browse a verified NGO or event that matches a cause you care about."),
+            ("ti-credit-card", "Donate securely", "Pay via Razorpay &mdash; cards, UPI, or net banking, fully encrypted."),
+            ("ti-arrow-right-circle", "Funds routed", "Approved NGOs receive funds directly through Razorpay Route."),
+            ("ti-receipt", "Track impact", "See exactly which event your donation supported, anytime.")
+            };
+                int fi = 0;
+            }
+            @foreach (var step in flow)
+            {
+                fi++;
+                <div class="flow-step">
+                    <div class="flow-step-icon"><i class="ti @step.Item1"></i></div>
+                    <div class="flow-step-body">
+                        <div class="flow-step-num">Step @fi</div>
+                        <h6 class="fw-700 mb-1">@step.Item2</h6>
+                        <p class="text-muted small mb-0">@step.Item3</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Tech stack -->
+<section class="py-5">
+    <div class="container" style="max-width:780px">
+        <div class="sd-card p-4 reveal">
+            <h5 class="fw-700 mb-3"><i class="ti ti-code"></i> Built with</h5>
+            <div class="row g-2">
+                @foreach (var tech in new[] { "ASP.NET Core 8 MVC", "C#", "Entity Framework Core", "SQL Server", "ASP.NET Identity", "Razorpay Route", "Bootstrap 5", "Custom SVG icons" })
+                {
+                    <div class="col-auto"><span class="badge-cat badge-other fw-600">@tech</span></div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5">
+    <div class="container">
+        <div class="cta-banner p-5 text-center reveal">
+            <h2 class="fw-800 text-white mb-2">Want to be part of this story?</h2>
+            <p style="color:rgba(255,255,255,.75)" class="mb-4">Whether you're giving or receiving, your journey starts with one click.</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="/Account/Register" class="btn btn-cta-gradient"><i class="ti ti-user-plus"></i>Join as donor</a>
+                <a href="/Account/Register" class="btn btn-outline-light btn-lg"><i class="ti ti-building-community"></i>Register NGO</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Animate the impact counters upward once they scroll into view
+        document.addEventListener('DOMContentLoaded', function () {
+            var counters = document.querySelectorAll('.counter-num');
+            var animated = new WeakSet();
+
+            function animateCounter(el) {
+                if (animated.has(el)) return;
+                animated.add(el);
+                var target = parseFloat(el.dataset.target) || 0;
+                var duration = 1200;
+                var start = performance.now();
+
+                function tick(now) {
+                    var progress = Math.min((now - start) / duration, 1);
+                    var eased = 1 - Math.pow(1 - progress, 3);
+                    var value = Math.floor(target * eased);
+                    el.textContent = value.toLocaleString('en-IN');
+                    if (progress < 1) requestAnimationFrame(tick);
+                    else el.textContent = target.toLocaleString('en-IN');
+                }
+                requestAnimationFrame(tick);
+            }
+
+            if ('IntersectionObserver' in window) {
+                var obs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            animateCounter(entry.target);
+                            obs.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.4 });
+                counters.forEach(function (c) { obs.observe(c); });
+            } else {
+                counters.forEach(animateCounter);
+            }
+        });
+    </script>
+}

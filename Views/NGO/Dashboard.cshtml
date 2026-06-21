@@ -1,0 +1,137 @@
+@model NGODashboardViewModel
+@{ ViewData["Title"] = "NGO Dashboard"; }
+
+<div class="dashboard-layout">
+    <div class="sd-sidebar">
+        <div class="sidebar-section-label">NGO menu</div>
+        <a href="/NGO/Dashboard"          class="sidebar-link active"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+        <a href="/NGO/EditProfile"        class="sidebar-link"><i class="ti ti-building-community"></i> Organization profile</a>
+        <a href="/NGO/BankDetails"        class="sidebar-link"><i class="ti ti-building-bank"></i> Bank &amp; payouts</a>
+        <a href="/NGO/PostEvent"          class="sidebar-link"><i class="ti ti-calendar-plus"></i> Post event</a>
+        <a href="/NGO/MyEvents"           class="sidebar-link"><i class="ti ti-calendar-event"></i> My events</a>
+        <a href="/NGO/BrowseItems"        class="sidebar-link"><i class="ti ti-package"></i> Browse items</a>
+        <a href="/NGO/MyRequests"         class="sidebar-link"><i class="ti ti-list-check"></i> My requests</a>
+        <a href="/NGO/ReceivedDonations"  class="sidebar-link"><i class="ti ti-heart-handshake"></i> Donations</a>
+        <hr/>
+        <form method="post" action="/Account/Logout">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="sidebar-link border-0 bg-transparent w-100 text-start text-danger">
+                <i class="ti ti-logout-2"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="dashboard-content">
+        @if (Model.Profile != null && !Model.Profile.IsApproved)
+        {
+            <div class="approval-banner mb-4">
+                <i class="ti ti-clock-hour-4"></i>
+                <div><strong>Approval pending</strong> &mdash; Your NGO registration is under review. You'll be able to post events once approved.</div>
+            </div>
+        }
+        else if (Model.BankDetailsNeeded)
+        {
+            <div class="action-banner mb-4">
+                <div class="d-flex gap-3 align-items-start">
+                    <i class="ti ti-building-bank" style="font-size:1.4rem;color:var(--sd-pink)"></i>
+                    <div>
+                        <strong>Add your bank details</strong>
+                        <p class="small text-muted mb-0">So donations can be sent directly to your NGO's account via Razorpay Route.</p>
+                    </div>
+                </div>
+                <a href="/NGO/BankDetails" class="btn btn-success btn-sm">Add now</a>
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-800 mb-0"><i class="ti ti-building-community"></i> @Model.Profile?.OrganizationName</h4>
+                <p class="text-muted small mb-0">@Model.Profile?.City, @Model.Profile?.State</p>
+            </div>
+            @if (Model.Profile?.IsApproved == true)
+            {
+                <a href="/NGO/PostEvent" class="btn btn-success"><i class="ti ti-plus"></i>Post event</a>
+            }
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-green"><i class="ti ti-heart-handshake"></i></div>
+                    <div><div class="stat-value">&#8377;@Model.TotalFundsReceived.ToString("N0")</div><div class="stat-label">Funds received</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-teal"><i class="ti ti-package"></i></div>
+                    <div><div class="stat-value">@Model.ItemsReceived</div><div class="stat-label">Items received</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-amber"><i class="ti ti-calendar-event"></i></div>
+                    <div><div class="stat-value">@Model.MyEvents.Count</div><div class="stat-label">Events posted</div></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon-box icon-blue"><i class="ti ti-list-check"></i></div>
+                    <div><div class="stat-value">@Model.MyItemRequests.Count</div><div class="stat-label">Item requests</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="sd-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="fw-700 mb-0">My events</h6>
+                            <a href="/NGO/MyEvents" class="small text-success">View all</a>
+                        </div>
+                        @if (!Model.MyEvents.Any())
+                        {
+                            <p class="text-muted small text-center py-3">No events yet. <a href="/NGO/PostEvent">Post one</a></p>
+                        }
+                        @foreach (var ev in Model.MyEvents)
+                        {
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="stat-icon-box icon-teal" style="width:40px;height:40px;font-size:1rem"><i class="ti ti-target-arrow"></i></div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-600 small">@ev.Title</div>
+                                    <div class="text-muted" style="font-size:.75rem">@ev.EventDate.ToString("dd MMM yyyy") &middot; &#8377;@ev.FundsRaised.ToString("N0") raised</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="sd-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="fw-700 mb-0">Recent donations</h6>
+                            <a href="/NGO/ReceivedDonations" class="small text-success">View all</a>
+                        </div>
+                        @if (!Model.ReceivedDonations.Any())
+                        {
+                            <p class="text-muted small text-center py-3">No donations received yet.</p>
+                        }
+                        @foreach (var d in Model.ReceivedDonations)
+                        {
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="donor-avatar">@(d.DonorProfile?.DonorName.Substring(0,1).ToUpper())</div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-600 small">@d.DonorProfile?.DonorName</div>
+                                    <div class="text-muted" style="font-size:.75rem">@d.DonatedOn.ToString("dd MMM yyyy")</div>
+                                </div>
+                                <span class="fw-700 text-success">&#8377;@d.Amount.ToString("N0")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

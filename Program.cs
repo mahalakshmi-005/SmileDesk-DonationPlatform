@@ -67,6 +67,19 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // ── Seed roles & admin on first run ───────────────────────────────────────
+// ── Apply pending migrations automatically on startup ─────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+// ── Seed roles & admin on first run ───────────────────────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAndAdmin(services);
+}
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

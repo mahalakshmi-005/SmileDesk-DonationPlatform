@@ -11,15 +11,15 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 // ── SQL Server via connection string ───────────────────────────────────────
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SmileDesk")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SmileDesk")));
 
 // ── Identity (using AddIdentity — no Razor Pages / Identity.UI needed) ─────
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount   = false;
-    options.Password.RequireDigit           = true;
-    options.Password.RequiredLength         = 6;
-    options.Password.RequireUppercase       = false;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -28,9 +28,9 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 // ── Cookie settings ────────────────────────────────────────────────────────
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath       = "/Account/Login";
+    options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan  = TimeSpan.FromDays(7);
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
 });
 
 // ── Custom services ────────────────────────────────────────────────────────
@@ -40,7 +40,7 @@ builder.Services.AddScoped<RazorpayService>();
 // ── Session ────────────────────────────────────────────────────────────────
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout     = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -94,11 +94,11 @@ static async Task SeedRolesAndAdmin(IServiceProvider services)
     {
         var admin = new ApplicationUser
         {
-            UserName       = adminEmail,
-            Email          = adminEmail,
-            FullName       = "Smile Desk Admin",
-            Role           = "Admin",
-            IsActive       = true,
+            UserName = adminEmail,
+            Email = adminEmail,
+            FullName = "Smile Desk Admin",
+            Role = "Admin",
+            IsActive = true,
             EmailConfirmed = true
         };
         var result = await userManager.CreateAsync(admin, "Admin@123");

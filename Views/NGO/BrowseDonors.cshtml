@@ -1,0 +1,49 @@
+@model List<DonorProfile>
+@{ ViewData["Title"] = "Our Donors"; }
+
+<div class="container py-5">
+    <div class="section-eyebrow"><i class="ti ti-users"></i> Supporters</div>
+    <h2 class="section-title mb-4">Donors who have supported your NGO</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="sd-card text-center py-5">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:60px;height:60px;font-size:1.6rem"><i class="ti ti-users"></i></div>
+            <h5 class="fw-700">No donors yet</h5>
+            <p class="text-muted">Once someone donates money or hands over an item to your NGO, they'll appear here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var donor in Model)
+            {
+                var totalGiven = donor.MoneyDonations.Sum(m => m.Amount);
+                var itemsGiven = donor.DonationItems.Count;
+                <div class="col-md-6 col-lg-4">
+                    <div class="sd-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="donor-avatar">@(donor.DonorName.Substring(0,1).ToUpper())</div>
+                                <div>
+                                    <div class="fw-700">@donor.DonorName</div>
+                                    <div class="text-muted small"><i class="ti ti-map-pin"></i> @donor.City, @donor.State</div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                @if (totalGiven > 0)
+                                {
+                                    <span class="badge-cat badge-approved"><i class="ti ti-currency-rupee"></i> &#8377;@totalGiven.ToString("N0") donated</span>
+                                }
+                                @if (itemsGiven > 0)
+                                {
+                                    <span class="badge-cat badge-other"><i class="ti ti-package"></i> @itemsGiven item(s)</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

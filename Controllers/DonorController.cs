@@ -431,6 +431,17 @@ namespace SmileDesk.Controllers
             return View(donations);
         }
 
+        // ─── Browse NGOs ──────────────────────────────────────────────────────
+        public async Task<IActionResult> BrowseNGOs()
+        {
+            var ngos = await _db.NGOProfiles
+                .Where(n => n.IsApproved)
+                .Include(n => n.Events)
+                .OrderByDescending(n => n.CreatedOn)
+                .ToListAsync();
+            return View(ngos);
+        }
+
         // ─── Helpers ──────────────────────────────────────────────────────────
         private async Task<string?> SaveImageAsync(IFormFile? file, string subfolder)
         {

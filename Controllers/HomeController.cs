@@ -18,20 +18,26 @@ namespace SmileDesk.Controllers
                 .SumAsync(d => (decimal?)d.Amount) ?? 0;
             ViewBag.Events = await _db.NGOEvents
                 .Include(e => e.NGOProfile)
-                .Where(e => e.IsActive && !e.IsDeleted && e.EventDate >= DateTime.UtcNow.Date).OrderBy(e => e.EventDate)
+                .Where(e => e.IsActive && !e.IsDeleted && e.EventDate >= DateTime.UtcNow.Date)
+                .OrderBy(e => e.EventDate)
                 .Take(6)
                 .ToListAsync();
             return View();
         }
 
-        public async Task<IActionResult> Events(string? category)
+        public async Task<IActionResult> Events(string? category, int? ngoId)
         {
             var query = _db.NGOEvents.Include(e => e.NGOProfile).Where(e => e.IsActive && !e.IsDeleted);
             if (!string.IsNullOrEmpty(category) &&
                 Enum.TryParse<SmileDesk.Models.EventCategory>(category, out var cat))
                 query = query.Where(e => e.Category == cat);
+            if (ngoId.HasValue)
+                query = query.Where(e => e.NGOProfileId == ngoId.Value);
 
             ViewBag.Category = category;
+            ViewBag.NgoFilterName = ngoId.HasValue
+                ? (await _db.NGOProfiles.FindAsync(ngoId.Value))?.OrganizationName
+                : null;
             return View(await query.OrderByDescending(e => e.PostedOn).ToListAsync());
         }
 

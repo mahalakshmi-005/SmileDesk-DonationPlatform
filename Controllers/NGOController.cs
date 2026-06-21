@@ -421,6 +421,36 @@ namespace SmileDesk.Controllers
             return View(donations);
         }
 
+        // ─── Browse Donors who have supported this NGO ────────────────────────
+        public async Task<IActionResult> BrowseDonors()
+        {
+            var profile = await GetProfileAsync();
+            if (profile == null) return RedirectToAction("CreateProfile");
+
+            // Donors who have either donated money to this NGO or had an
+            // accepted/picked-up item request with this NGO. We surface only
+            // donors with an existing relationship to this NGO, not a global
+            // directory, to keep donor contact details from being broadly exposed.
+            var donorIdsFromMoney = _db.MoneyDonations
+                .Where(m => m.NGOProfileId == profile.Id && m.Status == PaymentStatus.Success)
+                .Select(m => m.DonorProfileId);
+
+            var donorIdsFromItems = _db.ItemRequests
+                .Where(r => r.NGOProfileId == profile.Id &&
+                            (r.Status == ItemRequestStatus.Accepted || r.Status == ItemRequestStatus.PickedUp))
+                .Select(r => r.DonationItem!.DonorProfileId);
+
+            var donorIds = await donorIdsFromMoney.Union(donorIdsFromItems).Distinct().ToListAsync();
+
+            var donors = await _db.DonorProfiles
+                .Where(d => donorIds.Contains(d.Id))
+                .Include(d => d.MoneyDonations.Where(m => m.NGOProfileId == profile.Id && m.Status == PaymentStatus.Success))
+                .Include(d => d.DonationItems.Where(i => i.Requests.Any(r => r.NGOProfileId == profile.Id)))
+                .ToListAsync();
+
+            return View(donors);
+        }
+
         // ─── Helpers ──────────────────────────────────────────────────────────
         private async Task<string?> SaveImageAsync(IFormFile? file, string subfolder)
         {

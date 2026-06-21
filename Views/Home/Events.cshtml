@@ -5,6 +5,17 @@
     <div class="section-eyebrow"><i class="ti ti-compass"></i> Explore</div>
     <h2 class="section-title mb-4">All NGO events</h2>
 
+    @if (ViewBag.NgoFilterName != null)
+    {
+        <div class="action-banner mb-4">
+            <div class="d-flex gap-3 align-items-center">
+                <i class="ti ti-building-community" style="font-size:1.4rem;color:var(--sd-pink)"></i>
+                <div>Showing events from <strong>@ViewBag.NgoFilterName</strong></div>
+            </div>
+            <a href="/Home/Events" class="btn btn-sm btn-outline-secondary">Clear filter</a>
+        </div>
+    }
+
     <div class="d-flex flex-wrap gap-2 mb-4">
         <a href="/Home/Events" class="btn btn-sm @(ViewBag.Category == null ? "btn-success" : "btn-outline-secondary")">All</a>
         @foreach (var cat in Enum.GetValues<EventCategory>())

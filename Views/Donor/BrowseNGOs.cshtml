@@ -1,0 +1,45 @@
+@model List<NGOProfile>
+@{ ViewData["Title"] = "Browse NGOs"; }
+
+<div class="container py-5">
+    <div class="section-eyebrow"><i class="ti ti-building-community"></i> Directory</div>
+    <h2 class="section-title mb-4">Verified NGOs on Smile Desk</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="sd-card text-center py-5">
+            <div class="stat-icon-box icon-green mx-auto mb-3" style="width:60px;height:60px;font-size:1.6rem"><i class="ti ti-building-community"></i></div>
+            <h5 class="fw-700">No approved NGOs yet</h5>
+            <p class="text-muted">Check back soon as more organizations join.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var ngo in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="sd-card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="ngo-avatar"><i class="ti ti-building-community"></i></div>
+                                <div>
+                                    <div class="fw-700">@ngo.OrganizationName</div>
+                                    <div class="text-muted small"><i class="ti ti-map-pin"></i> @ngo.City, @ngo.State</div>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(ngo.Description))
+                            {
+                                <p class="text-muted small flex-grow-1">@(ngo.Description.Length > 110 ? ngo.Description[..110] + "..." : ngo.Description)</p>
+                            }
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge-cat badge-other"><i class="ti ti-calendar-event"></i> @ngo.Events.Count(e => e.IsActive) active events</span>
+                            </div>
+                            <a href="/Home/Events?ngoId=@ngo.Id" class="btn btn-sm btn-outline-success mt-auto"><i class="ti ti-arrow-right"></i> View events</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

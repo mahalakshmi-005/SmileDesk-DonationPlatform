@@ -42,7 +42,7 @@ namespace SmileDesk.Models
         [MaxLength(50)] public string State { get; set; } = string.Empty;
         [MaxLength(50)] public string Country { get; set; } = string.Empty;
         public bool IsApproved { get; set; } = false;
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         [MaxLength(500)] public string? Description { get; set; }
 
         // ── Razorpay Route (split payments) ──────────────────────────────────
@@ -72,7 +72,7 @@ namespace SmileDesk.Models
         [MaxLength(500)] public string Description { get; set; } = string.Empty;
         public ItemCondition Condition { get; set; }
         public DonationItemStatus Status { get; set; } = DonationItemStatus.Available;
-        public DateTime PostedOn { get; set; } = DateTime.Now;
+        public DateTime PostedOn { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedOn { get; set; }
         [MaxLength(200)] public string? ImagePath { get; set; }
 
@@ -97,7 +97,7 @@ namespace SmileDesk.Models
 
         [MaxLength(500)] public string Message { get; set; } = string.Empty;
         public ItemRequestStatus Status { get; set; } = ItemRequestStatus.Pending;
-        public DateTime RequestedOn { get; set; } = DateTime.Now;
+        public DateTime RequestedOn { get; set; } = DateTime.UtcNow;
         public DateTime? RespondedOn { get; set; }
         // Set once the NGO confirms physical pickup of the item from the donor
         public DateTime? PickedUpOn { get; set; }
@@ -118,7 +118,7 @@ namespace SmileDesk.Models
         [Column(TypeName = "decimal(18,2)")] public decimal? FundingGoal { get; set; }
         [Column(TypeName = "decimal(18,2)")] public decimal FundsRaised { get; set; } = 0;
         public DateTime EventDate { get; set; }
-        public DateTime PostedOn { get; set; } = DateTime.Now;
+        public DateTime PostedOn { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedOn { get; set; }
         public bool IsActive { get; set; } = true;
         [MaxLength(200)] public string? ImagePath { get; set; }
@@ -148,7 +148,7 @@ namespace SmileDesk.Models
         public string? RazorpayOrderId { get; set; }
         public string? RazorpayPaymentId { get; set; }
         public string? RazorpaySignature { get; set; }
-        public DateTime DonatedOn { get; set; } = DateTime.Now;
+        public DateTime DonatedOn { get; set; } = DateTime.UtcNow;
 
         // True once the payment was split via Razorpay Route to the NGO's
         // linked account, rather than just sitting in the platform balance.

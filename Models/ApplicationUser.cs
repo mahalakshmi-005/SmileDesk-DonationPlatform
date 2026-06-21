@@ -7,7 +7,7 @@ namespace SmileDesk.Models
         public string FullName { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty; // "Donor", "NGO", "Admin"
         public bool IsActive { get; set; } = true;
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public DonorProfile? DonorProfile { get; set; }

@@ -213,7 +213,7 @@ namespace SmileDesk.Controllers
             item.Category = vm.Category;
             item.Description = vm.Description;
             item.Condition = vm.Condition;
-            item.UpdatedOn = DateTime.Now;
+            item.UpdatedOn = DateTime.UtcNow;
 
             if (vm.Image != null && vm.Image.Length > 0)
                 item.ImagePath = await SaveImageAsync(vm.Image, "items") ?? item.ImagePath;
@@ -271,7 +271,7 @@ namespace SmileDesk.Controllers
             if (request == null) return NotFound();
 
             request.Status = accept ? ItemRequestStatus.Accepted : ItemRequestStatus.Rejected;
-            request.RespondedOn = DateTime.Now;
+            request.RespondedOn = DateTime.UtcNow;
 
             if (accept && request.DonationItem != null)
                 request.DonationItem.Status = DonationItemStatus.Accepted;
@@ -295,7 +295,7 @@ namespace SmileDesk.Controllers
             if (request == null || request.Status != ItemRequestStatus.Accepted) return NotFound();
 
             request.Status = ItemRequestStatus.PickedUp;
-            request.PickedUpOn = DateTime.Now;
+            request.PickedUpOn = DateTime.UtcNow;
             if (request.DonationItem != null)
                 request.DonationItem.Status = DonationItemStatus.Donated;
 

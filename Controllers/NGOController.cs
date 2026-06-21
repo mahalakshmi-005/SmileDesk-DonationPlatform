@@ -272,7 +272,7 @@ namespace SmileDesk.Controllers
             ev.Category = vm.Category;
             ev.FundingGoal = vm.FundingGoal;
             ev.EventDate = vm.EventDate;
-            ev.UpdatedOn = DateTime.Now;
+            ev.UpdatedOn = DateTime.UtcNow;
 
             if (vm.Image != null && vm.Image.Length > 0)
                 ev.ImagePath = await SaveImageAsync(vm.Image, "events") ?? ev.ImagePath;

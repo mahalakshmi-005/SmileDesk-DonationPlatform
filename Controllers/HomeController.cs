@@ -18,8 +18,7 @@ namespace SmileDesk.Controllers
                 .SumAsync(d => (decimal?)d.Amount) ?? 0;
             ViewBag.Events = await _db.NGOEvents
                 .Include(e => e.NGOProfile)
-                .Where(e => e.IsActive && !e.IsDeleted && e.EventDate >= DateTime.Today)
-                .OrderBy(e => e.EventDate)
+                .Where(e => e.IsActive && !e.IsDeleted && e.EventDate >= DateTime.UtcNow.Date).OrderBy(e => e.EventDate)
                 .Take(6)
                 .ToListAsync();
             return View();

@@ -1,134 +1,74 @@
-# Smile Desk — Full Stack ASP.NET Core MVC Web App
+<div align="center">
 
-A donation platform connecting Donors and NGOs, with Razorpay payment integration
-including split payments (Razorpay Route) directly to NGO bank accounts.
+# 💚 Smile Desk
+
+**Where generosity meets verified impact.**
+
+A full-stack donation platform connecting donors and NGOs across India —
+built end-to-end with ASP.NET Core, Razorpay, and PostgreSQL.
+
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![Razorpay](https://img.shields.io/badge/Payments-Razorpay-0C2451)](https://razorpay.com/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)](https://www.postgresql.org/)
+[![Deployed on Render](https://img.shields.io/badge/Deployed-Render-46E3B7?logo=render)](https://render.com/)
+
+</div>
 
 ---
 
-## Tech Stack
+## 🌍 Live
 
-| Layer | Technology |
+**[smiledesk-donationplatform.onrender.com](https://smiledesk-donationplatform.onrender.com)**
+
+*(Free-tier hosting — first load after idle may take ~30s to wake up.)*
+
+---
+
+## ✨ What it does
+
+Smile Desk solves a simple but real problem: donors want to give, NGOs need help,
+and there's rarely a trusted bridge between them. This platform is that bridge.
+
+| | |
 |---|---|
-| Backend | ASP.NET Core 8 MVC + C# |
-| ORM | Entity Framework Core 8 |
-| Database | SQL Server (LocalDB for dev) |
-| Auth | ASP.NET Core Identity + Roles |
-| Payments | Razorpay (Orders API + Route for split payouts) |
-| Frontend | Bootstrap 5 + Tabler Icons |
+| 💳 | Donors fund verified NGO events directly through **Razorpay** |
+| 🔀 | **Razorpay Route** splits payments straight to an NGO's bank account |
+| 📦 | Donors list physical items; NGOs request, accept, and confirm handover |
+| 🏢 | Every NGO is **admin-approved** before it can raise funds |
+| 🔍 | Donors browse a live NGO directory; NGOs see who's supported them |
+| 🛠️ | Full CRUD — edit or retire any profile, item, or event you've posted |
 
 ---
 
-## What's new in this build
+## 🧱 Built with
 
-- **Full CRUD** — Donors and NGOs can edit/delete their own profiles, items, and
-  events (soft-delete preserves history where donations/requests already exist).
-- **Item handover workflow** — when a donor accepts an NGO's request, the item
-  moves to "Accepted", and the donor explicitly confirms physical handover once
-  the NGO has picked it up, closing the loop that used to stop at "Accepted".
-- **Razorpay Route** — approved NGOs can submit bank details; if Route is enabled
-  on the platform Razorpay account, future donations are split and sent directly
-  to the NGO's linked account instead of pooling in the platform balance. If Route
-  isn't approved yet, donations still work normally and are settled manually.
-- **Professional icon set** — Tabler Icons throughout, no emoji.
-- **Scroll animations** — sections fade/rise into view as you scroll.
+`ASP.NET Core 8 MVC` · `C#` · `Entity Framework Core` · `PostgreSQL` ·
+`ASP.NET Identity` · `Razorpay API` · `Docker` · `Custom SVG icon system`
+
+No template UI kits, no font-icon CDNs — the entire design system (theme,
+animations, icon set) is hand-built and dependency-free.
 
 ---
 
-## ⚠️ IMPORTANT — Database reset required
+## 🚀 Run it locally
 
-This version adds new columns (`IsDeleted`, `RazorpayAccountId`, `BankAccountNumber`,
-etc.) and a new `PickedUp` status. Your existing migration is now out of date.
+\`\`\`bash
+git clone https://github.com/mahalakshmi-005/SmileDesk-DonationPlatform.git
+cd SmileDesk-DonationPlatform
 
-In **Package Manager Console**:
-
-```powershell
-Remove-Migration
-```
-
-If that fails or there's nothing to remove, just delete everything inside the
-`Migrations` folder manually, then:
-
-```powershell
-Add-Migration InitialCreate
-Update-Database
-```
-
-If `Update-Database` fails with a "database already exists" type conflict, the
-simplest fix for a project still in development is to drop and recreate it:
-
-```powershell
-Drop-Database
-Update-Database
-```
-
----
-
-## Setup Instructions
-
-### 1. Prerequisites
-- Visual Studio 2022, .NET 8 SDK, SQL Server / LocalDB
-
-### 2. Razorpay keys (User Secrets — never commit these)
-
-```powershell
 dotnet user-secrets init
-dotnet user-secrets set "Razorpay:KeyId" "rzp_test_xxxxxxxxxxxx"
-dotnet user-secrets set "Razorpay:KeySecret" "xxxxxxxxxxxxxxxxxxxx"
-```
+dotnet user-secrets set "Razorpay:KeyId" "rzp_test_xxxxxxxx"
+dotnet user-secrets set "Razorpay:KeySecret" "xxxxxxxxxxxxxx"
 
-`appsettings.json` keeps empty placeholders — User Secrets override them locally
-and are never pushed to GitHub.
-
-### 3. Database
-
-```powershell
-Add-Migration InitialCreate
-Update-Database
-```
-
-### 4. Run
-
-Press `F5`. Default admin: `admin@smiledesk.com` / `Admin@123`
+dotnet ef database update
+dotnet run
+\`\`\`
 
 ---
 
-## Razorpay Route — enabling direct NGO payouts
+## 👩‍💻 Author
 
-Route requires approval from Razorpay at the account level (KYC + business
-verification). Until it's approved on your Razorpay account:
+**Maha Lakshmi Kannan** — B.Sc Computer Science, Jayaraj Annapackiam College For Womens (Autonomous), Periyakulam
+Final-year project, 2025.
 
-- NGOs can still submit bank details from their dashboard.
-- The app safely falls back to standard order creation — donations work exactly
-  as before, just without automatic splitting.
-- Once Route is approved, no code changes are needed — `RazorpayService` already
-  creates linked accounts and routes new orders automatically.
-
----
-
-## Known limitations (documented honestly)
-
-- **Email verification is not implemented.** Accounts are created with
-  `EmailConfirmed = true` automatically for ease of testing. Before any real
-  deployment, add email confirmation (OTP or link) so unverified addresses can't
-  log in.
-- **Test Mode only.** Razorpay is running in test mode. Going live requires
-  switching to live API keys after Razorpay completes KYC for the platform account.
-
----
-
-## Project structure
-
-```
-SmileDesk/
-├── Controllers/        AccountController, HomeController, DonorController,
-│                        NGOController, AdminController — full CRUD actions
-├── Models/              ApplicationUser, DomainModels (with soft-delete + Route fields)
-├── ViewModels/           Including BankDetailsViewModel for Route onboarding
-├── Data/                 ApplicationDbContext with cascade-delete fixes
-├── Services/             RazorpayService — orders, linked accounts, transfers, signature
-└── Views/                Home, Account, Donor, NGO, Admin — Tabler icons + animations
-```
-
----
-
-*Built by Maha Lakshmi Kannan — UG Final Year Project, Panimalar Engineering College*
+<div align="center"><sub>Built with patience, a lot of debugging, and a genuine belief that giving should be easy.</sub></div>

@@ -86,7 +86,7 @@ namespace SmileDesk.Controllers
                 UserId = user!.Id,
                 DonorName = vm.DonorName,
                 ContributionType = vm.ContributionType,
-                DateOfBirth = vm.DateOfBirth,
+                DateOfBirth = DateTime.SpecifyKind(vm.DateOfBirth, DateTimeKind.Utc),
                 MobileNumber = vm.MobileNumber,
                 DoorNo = vm.DoorNo,
                 StreetName = vm.StreetName,

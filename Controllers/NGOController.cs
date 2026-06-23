@@ -225,7 +225,7 @@ namespace SmileDesk.Controllers
                 Description = vm.Description,
                 Category = vm.Category,
                 FundingGoal = vm.FundingGoal,
-                EventDate = vm.EventDate,
+                EventDate = DateTime.SpecifyKind(vm.EventDate, DateTimeKind.Utc),
                 ImagePath = imagePath
             });
             await _db.SaveChangesAsync();
@@ -271,8 +271,7 @@ namespace SmileDesk.Controllers
             ev.Description = vm.Description;
             ev.Category = vm.Category;
             ev.FundingGoal = vm.FundingGoal;
-            ev.EventDate = vm.EventDate;
-            ev.UpdatedOn = DateTime.UtcNow;
+            ev.EventDate = DateTime.SpecifyKind(vm.EventDate, DateTimeKind.Utc); ev.UpdatedOn = DateTime.UtcNow;
 
             if (vm.Image != null && vm.Image.Length > 0)
                 ev.ImagePath = await SaveImageAsync(vm.Image, "events") ?? ev.ImagePath;
